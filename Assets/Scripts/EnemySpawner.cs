@@ -7,9 +7,17 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField]
     private GameObject enemyPrefab;
     [SerializeField]
+    private GameObject enemyHPPrefab;
+    [SerializeField]
+    private Transform hpUIParent;
+    [SerializeField]
     private float spawnTime;
     [SerializeField]
     private Transform[] wayPoints;
+    [SerializeField]
+    private PlayerHP playerHP;
+    [SerializeField]
+    private PlayerGold playerGold;
     private List<Enemy> enemyList;
 
     public List<Enemy> EnemyList => enemyList;
@@ -30,13 +38,34 @@ public class EnemySpawner : MonoBehaviour
             enemy.Setup(this, wayPoints);
             enemyList.Add(enemy);
 
+            SpawnEnemyHP(clone);
+
             yield return new WaitForSeconds(spawnTime);
         }
     }
 
-    public void DestroyEnemy(Enemy enemy)
+    public void DestroyEnemy(EnemyDestroyType type, Enemy enemy, int gold)
     {
+        if (type == EnemyDestroyType.Arrive)
+        {
+            playerHP.TakeDamage(1);
+        }
+        else if (type == EnemyDestroyType.Kill)
+        {
+            playerGold.CurrentGold += gold;
+        }
+
         enemyList.Remove(enemy);
         Destroy(enemy.gameObject);
+    }
+
+    private void SpawnEnemyHP(GameObject enemy)
+    {
+        var clone = Instantiate(enemyHPPrefab);
+        clone.transform.SetParent(hpUIParent);
+        clone.transform.localScale = Vector3.one;
+
+        clone.GetComponent<FollowTargetUI>().SetTarget(enemy.GetComponent<Enemy>().HUDPoint);
+        clone.GetComponent<EnemyHPViewer>().Setup(enemy.GetComponent<EnemyHP>());
     }
 }

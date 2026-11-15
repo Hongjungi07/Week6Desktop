@@ -1,15 +1,25 @@
 using UnityEngine;
 using System.Collections;
 
+public enum EnemyDestroyType { Kill = 0, Arrive }
+
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
+    private Transform hudPoint;
+    [SerializeField]
+    private Transform rotator;
+    [SerializeField]
     private float timeOffset = 1f;
+    [SerializeField]
+    private int gold = 10;
 
     private Transform[] wayPoints;
     private int wayPointCount;
     private int currentIndex = 0;
     private EnemySpawner enemySpawner;
+
+    public Transform HUDPoint => hudPoint;
 
     public void Setup(EnemySpawner enemySpawner, Transform[] wayPoints)
     {
@@ -28,7 +38,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        transform.Rotate(Vector3.forward, 360 * Time.deltaTime);
+        rotator.Rotate(Vector3.forward, 360 * Time.deltaTime);
     }
 
     private IEnumerator Process()
@@ -40,7 +50,8 @@ public class Enemy : MonoBehaviour
             if (currentIndex < wayPointCount - 1) currentIndex++;
             else
             {
-                OnDie();
+                gold = 0;
+                OnDie(EnemyDestroyType.Arrive);
             }
         }
     }
@@ -59,8 +70,8 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void OnDie()
+    public void OnDie(EnemyDestroyType type)
     {
-        enemySpawner.DestroyEnemy(this);
+        enemySpawner.DestroyEnemy(type, this, gold);
     }
 }
