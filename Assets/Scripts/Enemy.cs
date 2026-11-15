@@ -8,10 +8,13 @@ public class Enemy : MonoBehaviour
 
     private Transform[] wayPoints;
     private int wayPointCount;
-    private int currentIndex = 0; 
+    private int currentIndex = 0;
+    private EnemySpawner enemySpawner;
 
-    public void Setup(Transform[] wayPoints)
+    public void Setup(EnemySpawner enemySpawner, Transform[] wayPoints)
     {
+        this.enemySpawner = enemySpawner;
+
         wayPointCount = wayPoints.Length;
         this.wayPoints = new Transform[wayPointCount];
         this.wayPoints = wayPoints;
@@ -37,7 +40,7 @@ public class Enemy : MonoBehaviour
             if (currentIndex < wayPointCount - 1) currentIndex++;
             else
             {
-                Destroy(gameObject);
+                OnDie();
             }
         }
     }
@@ -54,5 +57,10 @@ public class Enemy : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public void OnDie()
+    {
+        enemySpawner.DestroyEnemy(this);
     }
 }

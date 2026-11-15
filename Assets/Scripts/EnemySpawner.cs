@@ -1,18 +1,22 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]
-    private GameObject enemyPrefab;   
+    private GameObject enemyPrefab;
     [SerializeField]
-    private float spawnTime;   
+    private float spawnTime;
     [SerializeField]
-    private Transform[] wayPoints;  
+    private Transform[] wayPoints;
+    private List<Enemy> enemyList;
+
+    public List<Enemy> EnemyList => enemyList;
 
     private void Awake()
     {
-        // 적 생성 코루틴 메소드 호출
+        enemyList = new List<Enemy>();
         StartCoroutine(nameof(SpawnEnemy));
     }
 
@@ -20,12 +24,19 @@ public class EnemySpawner : MonoBehaviour
     {
         while (true)
         {
-            GameObject clone = Instantiate(enemyPrefab); 
-            Enemy enemy = clone.GetComponent<Enemy>(); 
+            GameObject clone = Instantiate(enemyPrefab);
+            Enemy enemy = clone.GetComponent<Enemy>();
 
-            enemy.Setup(wayPoints);                             
+            enemy.Setup(this, wayPoints);
+            enemyList.Add(enemy);
 
-            yield return new WaitForSeconds(spawnTime); 
+            yield return new WaitForSeconds(spawnTime);
         }
+    }
+
+    public void DestroyEnemy(Enemy enemy)
+    {
+        enemyList.Remove(enemy);
+        Destroy(enemy.gameObject);
     }
 }
