@@ -17,6 +17,10 @@ public class UIPopupTower : MonoBehaviour
     private TextMeshProUGUI textLevel;
     [SerializeField]
     private TowerAttackRange towerAttackRange;
+    [SerializeField]
+    private Button buttonUpgrade;
+    [SerializeField]
+    private SystemTextViewer systemTextViewer;
 
     private TowerWeapon currentTower;
 
@@ -49,9 +53,33 @@ public class UIPopupTower : MonoBehaviour
 
     private void UpdateTowerData()
     {
+        imageTower.sprite = currentTower.TowerSprite;
         textDamage.text = $"Damage : {currentTower.Damage}";
         textRate.text = $"Rate : {currentTower.Rate}";
         textRange.text = $"Range : {currentTower.Range}";
         textLevel.text = $"Level : {currentTower.Level}";
+
+        buttonUpgrade.interactable = currentTower.Level < currentTower.MaxLevel;
+    }
+
+    public void OnClickEventTowerUpgrade()
+    {
+        bool isSuccess = currentTower.Upgrade();
+
+        if (isSuccess == true)
+        {
+            UpdateTowerData();
+            towerAttackRange.OnAttackRange(currentTower.transform.position, currentTower.Range);
+        }
+        else
+        {
+            systemTextViewer.PrintText(MESSAGE.MONEY);
+        }
+    }
+
+    public void OnClickEventTowerSell()
+    {
+        currentTower.Sell();
+        OffPopup();
     }
 }
