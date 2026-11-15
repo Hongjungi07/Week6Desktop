@@ -24,7 +24,8 @@ public class TowerSpawner : MonoBehaviour
 
         tile.IsBuildTower = true;
         playerGold.CurrentGold -= towerBuildGold;
-        var clone = Instantiate(towerPrefab, tileTransform.position, Quaternion.identity);
+        Vector3 position = tileTransform.position + Vector3.back;
+        var clone = Instantiate(towerPrefab, position, Quaternion.identity);
         clone.GetComponent<TowerWeapon>().Setup(enemySpawner);
     }
 }

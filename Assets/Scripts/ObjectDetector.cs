@@ -5,6 +5,8 @@ public class ObjectDetector : MonoBehaviour
 {
     [SerializeField]
     private TowerSpawner towerSpawner;
+    [SerializeField]
+    private UIPopupTower uiPopupTower;
 
     private Camera mainCamera;
     private Vector2 screenPoint;
@@ -31,6 +33,10 @@ public class ObjectDetector : MonoBehaviour
             if (hit.transform.CompareTag("Tile"))
             {
                 towerSpawner.TrySpawnTower(hit.transform);
+            }
+            else if (hit.transform.CompareTag("Tower"))
+            {
+                uiPopupTower.OnPopup(hit.transform);
             }
         }
     }
